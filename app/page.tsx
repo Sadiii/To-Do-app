@@ -1,91 +1,109 @@
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from './page.module.css'
-
-const inter = Inter({ subsets: ['latin'] })
-
+"use client";
+import { useState } from "react";
+import {
+  Flex,
+  Heading,
+  Button,
+  Input,
+  Checkbox,
+  Stack,
+  useColorMode,
+  useColorModeValue,
+} from "@chakra-ui/react";
+import { MoonIcon, SunIcon, DeleteIcon } from "@chakra-ui/icons";
 export default function Home() {
+  const { toggleColorMode } = useColorMode();
+  const formbackground = useColorModeValue("gray.100", "gray.700");
+  let [todos, setTodo] = useState([
+    { Activity: "Wake up Early", State: true },
+    { Activity: "Drink Water", State: true },
+    { Activity: "Hit the gym or Walk", State: false },
+    { Activity: "Breakfast", State: true },
+  ]);
+
+  let [addtodo, setaddtodo] = useState("");
+
+  function clickHandler(elem: any) {
+    let newtodo = todos.map((todo) => {
+      if (todo.Activity == elem.Activity) {
+        todo.State = !todo.State;
+      }
+      return todo;
+    });
+    setTodo(newtodo);
+  }
+
+  function addtodoHandler() {
+    let newtodo = { Activity: addtodo, State: false };
+    setTodo([...todos, newtodo]);
+  }
+  function deleteHandler(elem: any) {
+    console.log(todos);
+    let newtodo = todos.filter((todo) => {
+      if (todo.Activity == elem.Activity) return false;
+      return true;
+    });
+    console.log(newtodo);
+    setTodo(newtodo);
+  }
   return (
-    <main className={styles.main}>
-      <div className={styles.description}>
-        <p>
-          Get started by editing&nbsp;
-          <code className={styles.code}>app/page.tsx</code>
-        </p>
-        <div>
-          <a
-            href="https://vercel.com?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            By{' '}
-            <Image
-              src="/vercel.svg"
-              alt="Vercel Logo"
-              className={styles.vercelLogo}
-              width={100}
-              height={24}
-              priority
+    <>
+      <Flex height="100vh" alignItems="center" justifyContent="center">
+        <Flex
+          direction="column"
+          background={formbackground}
+          padding={12}
+          rounded={6}
+        >
+          <Button onClick={toggleColorMode} style={{ width: "fit-content" }}>
+            {" "}
+            {formbackground == "gray.100" ? <SunIcon /> : <MoonIcon />}
+          </Button>
+          <Heading padding={6}>To Do App!</Heading>
+
+          <Stack direction="row" mb={3}>
+            <Input
+              placeholder=" Add new todo"
+              focusBorderColor="teal.500"
+              mb={3}
+              onChange={(e) => {
+                setaddtodo(e.target.value);
+              }}
             />
-          </a>
-        </div>
-      </div>
+            <Button
+              onClick={addtodoHandler}
+              mb={2}
+              padding="5"
+              colorScheme="teal"
+            >
+              {" "}
+              Add todo
+            </Button>
+          </Stack>
 
-      <div className={styles.center}>
-        <Image
-          className={styles.logo}
-          src="/next.svg"
-          alt="Next.js Logo"
-          width={180}
-          height={37}
-          priority
-        />
-        <div className={styles.thirteen}>
-          <Image src="/thirteen.svg" alt="13" width={40} height={31} priority />
-        </div>
-      </div>
-
-      <div className={styles.grid}>
-        <a
-          href="https://beta.nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Docs <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Find in-depth information about Next.js features and API.
-          </p>
-        </a>
-
-        <a
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Templates <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>Explore the Next.js 13 playground.</p>
-        </a>
-
-        <a
-          href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template&utm_campaign=create-next-app"
-          className={styles.card}
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <h2 className={inter.className}>
-            Deploy <span>-&gt;</span>
-          </h2>
-          <p className={inter.className}>
-            Instantly deploy your Next.js site to a shareable URL with Vercel.
-          </p>
-        </a>
-      </div>
-    </main>
-  )
+          <Stack spacing={5} direction="column">
+            {todos.map((todo) => {
+              return (
+                <>
+                  <Stack direction="row">
+                    <Checkbox
+                      colorScheme={"green"}
+                      defaultChecked={todo.State}
+                      onChange={() => clickHandler(todo)}
+                      key={todo.Activity}
+                    >
+                      {todo.Activity}
+                    </Checkbox>
+                    <Button size="sm" onClick={() => deleteHandler(todo)}>
+                      <DeleteIcon />
+                    </Button>
+                  </Stack>
+                </>
+              );
+            })}
+          </Stack>
+        </Flex>
+      </Flex>
+    </>
+  );
 }
